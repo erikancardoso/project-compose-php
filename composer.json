@@ -1,0 +1,21 @@
+{
+    "name": "erikacardoso/projeto-php",
+    "description": "php-profissional",
+    "authors": [
+        {
+            "name": "erika",
+            "email": "erikancardoso@outlook.com"
+        }
+    ],
+
+    "require": {},
+    "autoload": {
+        "files": [
+            "app/helpers/constants.php",
+            "app/router/router.php"
+        ],
+        "psr-4": {
+            "app\\": "app"
+        }
+    }
+}
