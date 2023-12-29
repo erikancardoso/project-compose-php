@@ -1,7 +1,9 @@
 <?php
 
+// caminhos dentro site
 function routes()
 {
+    //pega o arquivo de rotas
    return require 'routes.php';
 }
 function exactMatchUri($uri, $routes){
@@ -11,23 +13,46 @@ function exactMatchUri($uri, $routes){
     }
     return [];
 }
+//consulta por uri
 
+function regularExpressionMatchArrayRoutes($uri, $routes)
+{
+    //expressão regular
+    return array_filter(
+        $routes,
+        function ($value) use ($uri){
+            $regex = str_replace('/','\/', ltrim($value, '/'));
+            return preg_match("/^$regex$/", ltrim($uri, '/'));
+        },
+        ARRAY_FILTER_USE_KEY
+    );
+}
+function params($uri, $matchedUri)
+{
+    //o diff resgatar o usuario e id de usuario para que a comparação possa ser feita com a rota de navegação
+    if(!empty($matchedUri)) {
+        $matchToGetParams = array_keys($matchedUri)[0]; // recebe a chave dentro array
+        return array_diff(
+            //comparação a função definida com a da barra de pesquisa, coloca na string, e extra os elementos diferentes e joga no novo array
+            explode('/', ltrim($uri, '/')),
+            explode('/', ltrim($matchToGetParams, '/'))
+        );
+    }
+    return [];
+}
 function router()
 {
-    //rota fixass
+    //rota fixas
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $routes = routes();
     $matchedUri = exactMatchUri($uri, $routes);
     //rota dinamica
     if(empty($matchedUri)){
-        $matchedUri = array_filter( //criar uma funcao
-            $routes,
-            function ($value) use ($uri){
-                $regex = str_replace('/','\/', ltrim($value, '/'));
-                return preg_match("/^$regex$/", ltrim($uri, '/'));
-            },
-            ARRAY_FILTER_USE_KEY
-        );
+        //separar por expressão regular
+        $matchedUri = regularExpressionMatchArrayRoutes($uri,$routes);
+        //resultado dos parametros
+        $params = params($uri, $matchedUri);
+
     }
     var_dump($matchedUri);
     die();
