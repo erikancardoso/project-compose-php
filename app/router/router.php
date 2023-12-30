@@ -34,11 +34,19 @@ function params($uri, $matchedUri)
         $matchToGetParams = array_keys($matchedUri)[0]; // recebe a chave dentro array
         return array_diff(
             //comparação a função definida com a da barra de pesquisa, coloca na string, e extra os elementos diferentes e joga no novo array
-            explode('/', ltrim($uri, '/')),
+            $uri,
             explode('/', ltrim($matchToGetParams, '/'))
         );
     }
     return [];
+}
+function FormParams($uri, $params)
+{
+    $paramsData = [];
+    foreach ($params as $index => $param){
+        $paramsData[$uri[$index - 1]]= $param;
+    }
+    return $paramsData;
 }
 function router()
 {
@@ -50,10 +58,16 @@ function router()
     if(empty($matchedUri)){
         //separar por expressão regular
         $matchedUri = regularExpressionMatchArrayRoutes($uri,$routes);
+        $uri = explode('/', ltrim($uri,$routes));
         //resultado dos parametros
         $params = params($uri, $matchedUri);
-
+        $params = FormParams($uri, $params);
     }
-    var_dump($matchedUri);
-    die();
+    //se encontrou a rota exata ou dinamica o resultado ficará aqui
+    if(!empty($matchedUri)){
+        controller($matchedUri);
+        return;
+    }
+    throw new Exception("ops");
+
 }
