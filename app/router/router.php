@@ -55,17 +55,18 @@ function router()
     $routes = routes();
     $matchedUri = exactMatchUri($uri, $routes);
     //rota dinamica
+    $params = [];
     if(empty($matchedUri)){
         //separar por expressão regular
         $matchedUri = regularExpressionMatchArrayRoutes($uri,$routes);
-        $uri = explode('/', ltrim($uri,$routes));
+        $uri = explode('/', ltrim($uri,'/'));
         //resultado dos parametros
         $params = params($uri, $matchedUri);
         $params = FormParams($uri, $params);
     }
     //se encontrou a rota exata ou dinamica o resultado ficará aqui
     if(!empty($matchedUri)){
-        controller($matchedUri);
+        controller($matchedUri, $params);
         return;
     }
     throw new Exception("ops");

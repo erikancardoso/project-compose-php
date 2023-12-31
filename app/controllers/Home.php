@@ -3,8 +3,7 @@ namespace app\controllers;
 
 Class Home
 {
-    public function index()
+    public function index($params)
     {
-
     }
 }
